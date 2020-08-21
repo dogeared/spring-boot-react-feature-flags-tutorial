@@ -5,39 +5,22 @@ public class ConnectedUserList {
     public HashMap<String, ConnectedUser> connectedUsers;
 
     public ConnectedUserList() {
-        this.connectedUsers = new HashMap<String, ConnectedUser>();
+        this.connectedUsers = new HashMap<>();
     }
 
-    /**
-     * Replace existing user in the hashmap
-     * @param user - The user with old and new username
-     */
     private void replaceUser(ConnectedUser user) {
         this.removeUser(user);
         this.initializeUser(user);
     }
 
-    /**
-     * Removes a user from the connected user hashmap
-     * @param user - The user with an old username
-     */
     private void removeUser(ConnectedUser user) {
         this.connectedUsers.remove(user.oldUserName);
     }
 
-    /**
-     * Adds a brand new user to the connected user hashmap
-     * @param user - The user with only a current username
-     */
     private void initializeUser(ConnectedUser user) {
         this.connectedUsers.put(user.currentUserName, new ConnectedUser(user.currentUserName));
     }
 
-    /**
-     * Attempts to handle a user based on the information contained in the
-     * ConnectedUser object
-     * @param user - The user to process
-     */
     public void handleUser(ConnectedUser user) {
         if(!user.currentUserName.equals("") && user.oldUserName.equals("")) {
             // This is a new user
