@@ -8,6 +8,7 @@ import ConnectedUserList from "./components/ConnectedUserList";
 import SockJs from 'sockjs-client'
 import {Stomp} from '@stomp/stompjs'
 import {Pane} from "evergreen-ui";
+import {SplitFactory, SplitTreatments} from '@splitsoftware/splitio-react';
 
 /* Begin Setup */
 const socket = new SockJs("http://localhost:8080/chatroom", {}, {CheckOrigin: () => false});
@@ -23,6 +24,13 @@ stompClient.connect({}, () => {
   console.log('Connected to chat server');
 });
 /* End Setup */
+
+const splitConfig = {
+  core: {
+    authorizationKey: process.env.REACT_APP_AUTH_KEY,
+    key: 'CUSTOMER_ID'
+  }
+};
 
 function App() {
   const [userName, updateUsername] = useState("");
@@ -69,16 +77,25 @@ function App() {
   }
   /* End Handlers */
 
+  const featureName = 'display_connected_users';
   return (
-    <Pane width="100%"  display="flex" alignItems="center" justifyContent="center" className="margin-top">
-      <div>
-        <PageHeader/>
-        <UsernameComponent currentUsername={userName} updateUsername={sendConnectedUser}/>
-        <ConnectedUserList users={connectedUsers}/>
-        <MessageList messages={chatMessages}/>
-        <MessageBox sendMessage={sendChatMessage}/>
-      </div>
-    </Pane>
+      <SplitFactory config={splitConfig}>
+        <SplitTreatments names={[featureName]}>
+          {({treatments, isReady}) => {
+            const showConnectedUsers = treatments[featureName];
+            return isReady ?
+              <Pane width="100%"  display="flex" alignItems="center" justifyContent="center" className="margin-top">
+                <div>
+                  <PageHeader/>
+                  <UsernameComponent currentUsername={userName} updateUsername={sendConnectedUser}/>
+                  {showConnectedUsers && showConnectedUsers.treatment === 'on' ? <ConnectedUserList users={connectedUsers}/> : null }
+                  <MessageList messages={chatMessages}/>
+                  <MessageBox sendMessage={sendChatMessage}/>
+                </div>
+              </Pane> : null
+            }}
+        </SplitTreatments>
+      </SplitFactory>
   );
 }
 
