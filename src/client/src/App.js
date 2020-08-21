@@ -9,6 +9,7 @@ import SockJs from 'sockjs-client'
 import {Stomp} from '@stomp/stompjs'
 import {Pane} from "evergreen-ui";
 
+/* Begin Setup */
 const socket = new SockJs("http://localhost:8080/chatroom", {}, {CheckOrigin: () => false});
 socket.onopen = () => {
   console.log('Connected to server');
@@ -21,6 +22,7 @@ const stompClient = Stomp.over(socket);
 stompClient.connect({}, () => {
   console.log('Connected to chat server');
 });
+/* End Setup */
 
 function App() {
   const [userName, updateUsername] = useState("");
@@ -28,6 +30,7 @@ function App() {
   const [currentMessageId, updateMessageId] = useState(0);
   const [connectedUsers, updateConnectedUsers] = useState([]);
 
+  /* Being Handlers */
   const changeConnectedUsers = (connectedUserList) => {
     console.log('connected user list', connectedUserList);
     const names = Object.entries(connectedUserList.connectedUsers).map((kvp) => kvp[1].displayName);
@@ -64,6 +67,7 @@ function App() {
       changeConnectedUsers(JSON.parse(connectedUserList.body));
     });
   }
+  /* End Handlers */
 
   return (
     <Pane width="100%"  display="flex" alignItems="center" justifyContent="center" className="margin-top">
